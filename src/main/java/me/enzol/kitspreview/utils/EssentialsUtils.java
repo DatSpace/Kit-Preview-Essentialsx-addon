@@ -27,14 +27,14 @@ public class EssentialsUtils {
     public static Configuration config;
 
     public static List<ItemStack> getItems(Player player, String kitName){
-        Essentials ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+        Essentials ess = (Essentials)Bukkit.getPluginManager().getPlugin("Essentials");
         User user = ess.getUser(player);
         Kit kit;
         List<ItemStack> item = Lists.newArrayList();
         try{
             kit = new Kit(kitName, ess);
         }catch(Exception e){
-            player.sendMessage(ChatColor.RED + "Kit not found");
+            player.sendMessage(ChatColor.RED + "Kit not found!");
             return item;
         }
 
