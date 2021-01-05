@@ -25,7 +25,7 @@ import static com.earth2me.essentials.I18n.tl;
 
 public class EssentialsUtils {
 
-    private static Configuration config =  KitsPreview.getInstance().getConfig();
+    public static Configuration config;
 
     public static List<ItemStack> getItems(Player player, String kitName){
         Essentials ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");

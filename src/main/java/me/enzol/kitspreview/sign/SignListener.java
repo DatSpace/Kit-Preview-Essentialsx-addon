@@ -18,10 +18,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class SignListener implements Listener{
 
-    private KitsPreview plugin = KitsPreview.getInstance();
-    private Configuration config = plugin.getConfig();
-    private Essentials ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+    public SignListener(KitsPreview pluginInstance){
+        this.pluginInstance = pluginInstance;
+        config = pluginInstance.getConfig();
+    }
 
+    private final KitsPreview pluginInstance;
+    private final Configuration config;
+    private Essentials ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 
     @EventHandler
     public void onSignChange(SignChangeEvent event){

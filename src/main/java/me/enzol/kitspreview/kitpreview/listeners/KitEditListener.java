@@ -1,8 +1,8 @@
 package me.enzol.kitspreview.kitpreview.listeners;
 
+import me.enzol.kitspreview.KitsPreview;
 import me.enzol.kitspreview.kitpreview.item.KitItem;
 import me.enzol.kitspreview.kitpreview.KitPreview;
-import me.enzol.kitspreview.utils.TaskUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +12,12 @@ import org.bukkit.inventory.Inventory;
 
 public class KitEditListener implements Listener {
 
+    public KitEditListener(KitsPreview pluginInstance){
+        this.pluginInstance = pluginInstance;
+    }
+
+    private final KitsPreview pluginInstance;
+
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event){
         Player player = (Player) event.getPlayer();
@@ -20,7 +26,7 @@ public class KitEditListener implements Listener {
         if(!player.hasPermission("kitpreview.edit")) return;
 
         String kitName = player.getOpenInventory().getTitle().replace("Editing ", "");
-        KitPreview kitPreview = KitPreview.getByName(kitName);
+        KitPreview kitPreview = pluginInstance.getByName(kitName);
 
         if (kitPreview == null) return;
 
@@ -32,7 +38,7 @@ public class KitEditListener implements Listener {
         }
 
         player.sendMessage(ChatColor.GREEN + "Kit preview inventory saved");
-        TaskUtil.runAsync(kitPreview::save);
+        pluginInstance.getServer().getScheduler().runTaskAsynchronously(pluginInstance, kitPreview::save);
     }
 
 }

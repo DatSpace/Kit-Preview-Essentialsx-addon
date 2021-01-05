@@ -20,8 +20,13 @@ import java.util.stream.Collectors;
 
 public class KitPreviewCommand implements CommandExecutor, TabExecutor{
 
-    private static KitsPreview plugin = KitsPreview.getInstance();
-    private static Configuration config = plugin.getConfig();
+    public KitPreviewCommand(KitsPreview pluginInstance){
+        this.pluginInstance = pluginInstance;
+        this.config = pluginInstance.getConfig();
+    }
+
+    private final KitsPreview pluginInstance;
+    private final Configuration config;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args){
@@ -43,7 +48,7 @@ public class KitPreviewCommand implements CommandExecutor, TabExecutor{
 
         String kitName = args[0];
 
-        KitPreview kitPreview = KitPreview.getByName(kitName);
+        KitPreview kitPreview = pluginInstance.getByName(kitName);
 
         if(kitPreview == null){
             player.sendMessage(ChatColor.RED + "Kit not found");
