@@ -1,5 +1,6 @@
 package me.enzol.kitspreview.kitpreview;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import me.enzol.kitspreview.KitsPreview;
 import me.enzol.kitspreview.kitpreview.item.KitItem;
@@ -13,7 +14,7 @@ public class KitPreview {
 
     private String kitName;
     private int rows;
-    private List<KitItem> items;
+    private final List<KitItem> items;
 
     public void save(){
         Gson gson = pluginInstance.getGson();
@@ -25,10 +26,10 @@ public class KitPreview {
         }
     }
 
-    public KitPreview(String kitName, int rows, List<KitItem> items, KitsPreview pluginInstance){
+    public KitPreview(String kitName, int rows, KitsPreview pluginInstance){
         this.kitName = kitName;
         this.rows = rows;
-        this.items = items;
+        this.items = Lists.newArrayList();
         this.pluginInstance = pluginInstance;
     }
 
