@@ -2,9 +2,9 @@ package me.enzol.kitspreview;
 
 import com.earth2me.essentials.Essentials;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.Getter;
 import me.enzol.kitspreview.commands.KitEditPreviewCommand;
 import me.enzol.kitspreview.commands.KitPreviewCommand;
 import me.enzol.kitspreview.kitpreview.listeners.InventoryListener;
@@ -12,6 +12,7 @@ import me.enzol.kitspreview.kitpreview.listeners.KitEditListener;
 import me.enzol.kitspreview.kitpreview.KitPreview;
 import me.enzol.kitspreview.sign.SignListener;
 import me.enzol.kitspreview.utils.Color;
+import me.enzol.kitspreview.utils.EssentialsUtils;
 import me.enzol.kitspreview.utils.adaters.ItemStackAdapter;
 import me.enzol.kitspreview.utils.adaters.PotionEffectAdapter;
 import org.bukkit.Bukkit;
@@ -23,27 +24,28 @@ import org.bukkit.potion.PotionEffect;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Map;
 
 public class KitsPreview extends JavaPlugin{
 
-    @Getter private static KitsPreview instance;
-    @Getter private static Gson gson = new GsonBuilder()
+    private Gson gson = new GsonBuilder()
         .registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter())
         .registerTypeHierarchyAdapter(PotionEffect.class, new PotionEffectAdapter())
         .serializeNulls()
         .setPrettyPrinting()
         .create();
 
+    private final Map<String, KitPreview> kits = Maps.newHashMap();
+
     @Override
     public void onEnable(){
-        instance = this;
-
         this.saveDefaultConfig();
 
         checkConfig();
+        EssentialsUtils.config = getConfig();
 
         if(Bukkit.getPluginManager().getPlugin("Essentials") == null){
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Essentials not found");
+            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Essentials not found!");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -55,13 +57,13 @@ public class KitsPreview extends JavaPlugin{
 
     private void registerListeners(){
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
-        Bukkit.getPluginManager().registerEvents(new SignListener(), this);
-        Bukkit.getPluginManager().registerEvents(new KitEditListener(), this);
+        Bukkit.getPluginManager().registerEvents(new SignListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new KitEditListener(this), this);
     }
 
     private void registerCommands(){
-        KitPreviewCommand kitPreviewCommand = new KitPreviewCommand();
-        KitEditPreviewCommand kitEditPreviewCommand = new KitEditPreviewCommand();
+        KitPreviewCommand kitPreviewCommand = new KitPreviewCommand(this);
+        KitEditPreviewCommand kitEditPreviewCommand = new KitEditPreviewCommand(this);
 
         this.getCommand("kitpreview").setExecutor(kitPreviewCommand);
         this.getCommand("kitpreview").setTabCompleter(kitPreviewCommand);
@@ -74,15 +76,15 @@ public class KitsPreview extends JavaPlugin{
     private void loadKits(){
         Essentials ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
         ess.getKits().getKits().getKeys(false).forEach(kitName -> {
-            KitPreview kitsPreview;
+            KitPreview kitPreview;
             try {
-                kitsPreview = getGson().fromJson(new FileReader(this.getDataFolder()
+                kitPreview = getGson().fromJson(new FileReader(this.getDataFolder()
                     + File.separator + kitName + ".json"), KitPreview.class);
             } catch (FileNotFoundException e) {
-                kitsPreview = new KitPreview(kitName, 6, Lists.newArrayList());
+                kitPreview = new KitPreview(kitName, 6, Lists.newArrayList(), this);
             }
 
-            KitPreview.getKits().put(kitName.toLowerCase(), kitsPreview);
+            kits.put(kitName.toLowerCase(), kitPreview);
         });
     }
 
@@ -96,8 +98,15 @@ public class KitsPreview extends JavaPlugin{
             this.getConfig().options().copyDefaults(true);
             this.saveConfig();
             this.saveDefaultConfig();
-            Bukkit.getConsoleSender().sendMessage(Color.translate(prefix + "&7Update complete !"));
+            Bukkit.getConsoleSender().sendMessage(Color.translate(prefix + "&7Update complete!"));
         }
-        Bukkit.getConsoleSender().sendMessage(Color.translate(prefix + "&7You &bconfig/lang &7is updating!"));
+    }
+
+    public Gson getGson() {
+        return gson;
+    }
+
+    public KitPreview getByName(String name){
+        return kits.get(name.toLowerCase());
     }
 }

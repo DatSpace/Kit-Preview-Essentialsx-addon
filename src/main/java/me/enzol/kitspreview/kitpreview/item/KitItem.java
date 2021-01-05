@@ -1,15 +1,21 @@
 package me.enzol.kitspreview.kitpreview.item;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 
-@Getter @Setter
-@AllArgsConstructor
 public class KitItem {
+    private final ItemStack item;
+    private final int slot;
 
-    private ItemStack item;
-    private int slot;
+    public KitItem(ItemStack item, int slot){
+        this.item = item;
+        this.slot = slot;
+    }
 
+    public int getSlot() {
+        return slot;
+    }
+
+    public ItemStack getItem() {
+        return item;
+    }
 }

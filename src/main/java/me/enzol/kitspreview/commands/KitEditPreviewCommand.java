@@ -2,6 +2,7 @@ package me.enzol.kitspreview.commands;
 
 import com.earth2me.essentials.Essentials;
 import com.google.common.collect.Lists;
+import me.enzol.kitspreview.KitsPreview;
 import me.enzol.kitspreview.kitpreview.KitPreview;
 import me.enzol.kitspreview.utils.Color;
 import me.enzol.kitspreview.utils.EssentialsUtils;
@@ -21,6 +22,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class KitEditPreviewCommand implements CommandExecutor, TabExecutor {
+
+    public KitEditPreviewCommand(KitsPreview pluginInstance){
+        this.pluginInstance = pluginInstance;
+    }
+    private final KitsPreview pluginInstance;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -55,12 +61,12 @@ public class KitEditPreviewCommand implements CommandExecutor, TabExecutor {
 
                 String kitName = args[2];
 
-                if(KitPreview.getByName(kitName) != null){
+                if(pluginInstance.getByName(kitName) != null){
                     player.sendMessage(ChatColor.RED + "That kit already exists.");
                     return false;
                 }
 
-                KitPreview kitPreview = new KitPreview(kitName, rows, Lists.newArrayList());
+                KitPreview kitPreview = new KitPreview(kitName, rows, Lists.newArrayList(), pluginInstance);
                 Inventory inventory = Bukkit.createInventory(null, 9 * kitPreview.getRows(), "Editing " + kitName);
                 EssentialsUtils.getItems(player, kitName).forEach(inventory::addItem);
                 player.openInventory(inventory);
@@ -71,7 +77,7 @@ public class KitEditPreviewCommand implements CommandExecutor, TabExecutor {
         } else if (type.equalsIgnoreCase("edit")){
             String kitName = args[1];
 
-            KitPreview kitPreview = KitPreview.getByName(kitName);
+            KitPreview kitPreview = pluginInstance.getByName(kitName);
 
             if(kitPreview == null){
                 player.sendMessage(ChatColor.RED + "Kit not found.");
@@ -98,7 +104,7 @@ public class KitEditPreviewCommand implements CommandExecutor, TabExecutor {
 
                 String kitName = args[2];
 
-                KitPreview kitPreview = KitPreview.getByName(kitName);
+                KitPreview kitPreview = pluginInstance.getByName(kitName);
 
                 if(kitPreview == null){
                     player.sendMessage(ChatColor.RED + "Kit not found.");
