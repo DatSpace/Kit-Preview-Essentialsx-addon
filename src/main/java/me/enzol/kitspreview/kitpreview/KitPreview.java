@@ -10,7 +10,7 @@ import java.util.List;
 
 public class KitPreview {
 
-    private final KitsPreview pluginInstance;
+    private final transient KitsPreview pluginInstance;
 
     private String kitName;
     private int rows;

@@ -77,7 +77,6 @@ public class KitsPreview extends JavaPlugin{
         Essentials ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
         ess.getKits().getKits().getKeys(false).forEach(kitName -> {
             KitPreview kitPreview;
-            Bukkit.getConsoleSender().sendMessage(kitName + " Worked!");
             try {
                 kitPreview = getGson().fromJson(new FileReader(this.getDataFolder()
                     + File.separator + kitName + ".json"), KitPreview.class);
